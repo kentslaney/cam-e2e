@@ -1,0 +1,9 @@
+[submodule "src/efficientnet"]
+	path = src/efficientnet
+	url = git@github.com:kentslaney/efficientnet.git
+[submodule "src/nnd-bend"]
+	path = src/nnd-bend
+	url = git@github.com:kentslaney/nnd-bend.git
+[submodule "src/umap-cam"]
+	path = src/umap-cam
+	url = git@github.com:kentslaney/umap-cam.git
