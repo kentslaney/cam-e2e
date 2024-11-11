@@ -34,7 +34,7 @@ def flatten_parser(parser):
 
 def plot_cli(args):
     arr = np.load(args.knn_file)
-    plt.hist(arr[:, -1], 200)
+    plt.hist(arr[0, :, -1], 200)
     plt.show()
 
 def plot_parser(parser):
