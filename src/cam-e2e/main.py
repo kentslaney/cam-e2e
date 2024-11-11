@@ -1,6 +1,9 @@
 from sklearn.neighbors import NearestNeighbors
 import numpy as np
-import argparse
+import argparse, pathlib
+import matplotlib.pyplot as plt
+
+project_path = pathlib.Path(__file__).parents[2]
 
 def knn(k, x):
     x = x.reshape(-1, x.shape[-1])
@@ -29,12 +32,22 @@ def flatten_parser(parser):
     parser.add_argument("output_file")
     parser.set_defaults(call=flatten_cli)
 
+def plot_cli(args):
+    arr = np.load(args.knn_file)
+    plt.hist(arr[:, -1], 200)
+    plt.show()
+
+def plot_parser(parser):
+    parser.add_argument("knn_file", help="reformatted knn file from umap-cam")
+    parser.set_defaults(call=plot_cli)
+
 helper = lambda parser: lambda args: parser.parse_args(["-h"])
 
 def main(parser):
     subparsers = parser.add_subparsers()
     knn_parser(subparsers.add_parser("knn"))
     flatten_parser(subparsers.add_parser("flatten"))
+    plot_parser(subparsers.add_parser("plot"))
     parser.set_defaults(call=helper(parser))
     args = parser.parse_args()
     return args.call(args)
