@@ -1,0 +1,98 @@
+<html>
+  <div id="im-case">
+    <img id="source" src="input.png">
+    <div id="layers"></div>
+    <img id="mask">
+  </div>
+  <div>
+    locality=<span id="t-value">0</span>
+    color=<span id="c-value">0</span>
+  </div>
+  <div id="previews"></div>
+  <pre>
+  Moving the mouse over the image shows the nearest neighbors. Clicking then
+  moving the mouse will select all points closer to the initial click than the
+  point currently being moused over. Clicking a second time will save the
+  selection and show a preview at the bottom of the screen which can be removed
+  by clicking it. Clicking a second time with the control key held down will
+  fill the original image back in where the mask would be. Scrolling the mouse
+  wheel over the image will change locality and scrolling while holding shift
+  will change the color coefficient.
+  </pre>
+<style>
+#im-case {
+  display: inline-block;
+  position: relative;
+  cursor: crosshair;
+}
+
+#layers, #mask, .mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#previews img {
+  max-height: 5rem;
+  border: 1px solid #000;
+  margin: 1rem;
+}
+
+#previews {
+  min-height: 8rem;
+}
+</style>
+<script type="text/javascript">
+window.addEventListener("load", () => {
+  const el = document.getElementById("im-case")
+  const mask = document.getElementById("mask")
+  const t_display = document.getElementById("t-value")
+  const c_display = document.getElementById("c-value")
+  const layers = document.getElementById("layers")
+  const previews = document.getElementById("previews")
+  let x0 = 0, y0 = 0, active = false, t = 0, c = 0
+  const masker = e => {
+    const bbox = el.getBoundingClientRect()
+    let x1 = e.offsetX / bbox.width, y1 = e.offsetY / bbox.height
+    if (active) {
+      i = e.ctrlKey ? 1 : 0
+      mask.src = `l2?x0=${x0}&y0=${y0}&x1=${x1}&y1=${y1}&t=${t}&c=${c}&i=${i}`
+    } else {
+      mask.src = `knn?x=${x1}&y=${y1}`
+    }
+  }
+  el.addEventListener("mousemove", masker)
+  el.addEventListener("keydown", masker)
+  el.addEventListener("keyup", masker)
+  el.addEventListener("click", e => {
+    const bbox = el.getBoundingClientRect()
+    x0 = e.offsetX / bbox.width
+    y0 = e.offsetY / bbox.height
+    active = !active
+    if (!active) {
+      let layer = layers.appendChild(document.createElement("img"))
+      layer.src = mask.src
+      layer.classList.add("mask")
+      let preview = previews.appendChild(document.createElement("img"))
+      preview.src = mask.src
+      preview.addEventListener("click", () => {
+        layers.removeChild(layer)
+        previews.removeChild(preview)
+      })
+    }
+  })
+  el.addEventListener("wheel", e => {
+    if (e.shiftKey) {
+      c = Math.min(Math.max(c - event.deltaY * 0.0001, 0), 1)
+      c_display.innerText = c
+    } else {
+      t = Math.min(Math.max(t - event.deltaY * 0.0001, 0), 1)
+      t_display.innerText = t
+    }
+    masker(e)
+  })
+})
+</script>
+</html>
