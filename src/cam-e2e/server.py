@@ -107,8 +107,8 @@ def l2(job_name, x0, y0, x1, y1, t, c, i):
         embeddings = np.dstack((embeddings * (1 - c), im / 255 * c))
     if t != 0:
         pos = np.stack(np.meshgrid(
-            np.linspace(0, 1, embedding_size[0]),
-            np.linspace(0, 1, embedding_size[1])), -1)
+            np.linspace(0, 1, embedding_size[1]),
+            np.linspace(0, 1, embedding_size[0])), -1)
         embeddings = np.dstack((embeddings * (1 - t), pos * t))
     embeddings = np.sum((embeddings - embeddings[y0, x0]) ** 2, -1)
     out[embeddings < embeddings[y1, x1], 3] = 255
